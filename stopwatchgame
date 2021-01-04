@@ -1,0 +1,88 @@
+# Original location: http://www.codeskulptor.org/#user47_ollyu36l2D_3.py
+
+import simplegui
+
+# define global variables
+
+t = 0
+num_successful_stops = 0
+total_stops = 0
+is_timer_running = True
+
+# define helper function format that converts time
+# in tenths of seconds into formatted string A:BC.D
+def format():
+    global t
+    if t >= 600:
+        a = (t / 600) % 10
+        b = (t / 100) % 6
+        c = (t / 10) % 10
+        d = t % 10 
+        return str(a)+ ":" + str(b) + str(c) + "." + str(d) 
+    else: 
+        b = (t / 100) % 10
+        c = (t / 10)% 10
+        d = t % 10 
+        return str(0)+ ":" + str(b) + str(c) + "." + str(d)
+
+def counter():
+    global t
+    global num_successful_stops
+    global total_stops
+    global is_timer_running
+    if t == 0:
+        num_successful_stops == 0
+        total_stops == 0
+        return str(num_successful_stops) + " / " + str(total_stops) 
+    else: 
+        return str(num_successful_stops) + " / " + str(total_stops)
+               
+""" Event handlers for buttons "Start", "Stop", "Reset" defined."""
+
+def start_timer():
+    global is_timer_running
+    timer.start()
+    is_timer_running = True
+    
+def stop_timer():
+    global num_successful_stops
+    global total_stops
+    global is_timer_running
+    timer.stop()
+    if is_timer_running == True:
+        total_stops += 1
+        if (t % 10) == 0:
+            num_successful_stops += 1
+        is_timer_running = False
+    counter()
+    
+def reset_timer():
+    global t
+    global num_successful_stops
+    global total_stops
+    t = 0
+    num_successful_stops = 0
+    total_stops = 0
+        
+# define event handler for timer with 0.1 sec interval
+def timer_handler():
+    global t
+    t += 1
+    
+# define draw handler
+def draw(canvas):
+    canvas.draw_text(str(format()), [70, 120], 60, 'White')
+    canvas.draw_text(str(counter()), [240, 25], 20, 'Red')
+        
+# create frame
+frame = simplegui.create_frame("Stopwatch", 300, 200)
+frame.add_button("Start timer", start_timer, 200)
+frame.add_button("Stop timer", stop_timer, 200)
+frame.add_button("Reset timer", reset_timer, 200)
+
+# register event handlers
+frame.set_draw_handler(draw)
+timer = simplegui.create_timer(100, timer_handler)
+
+# start frame
+frame.start()
